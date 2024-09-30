@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Teleporter
   - SecondTeleporter
+  - interactable
   layers:
   - Default
   - TransparentFX
