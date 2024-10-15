@@ -8,6 +8,7 @@ TagManager:
   - SecondTeleporter
   - interactable
   - TicketBooth
+  - Door
   layers:
   - Default
   - TransparentFX

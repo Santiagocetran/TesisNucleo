@@ -15,6 +15,9 @@ public class TicketBoothInteraction : MonoBehaviour
     public GameObject popupPanel2;
     public GameObject popupPanel3;
     public GameObject popupPanel4;
+    public GameObject doorPupupPanel;
+
+    public Button doorPopupCloseButton;
 
     private FirstPersonMovement playerController;
     private FirstPersonLook cameraLook;
@@ -36,6 +39,8 @@ public class TicketBoothInteraction : MonoBehaviour
         continueButton.onClick.RemoveAllListeners();
         continueButton.onClick.AddListener(ClosePopup);
 
+        doorPopupCloseButton.onClick.AddListener(ClosePopupDoor);
+
         playerController = GetComponent<FirstPersonMovement>();
         cameraLook = playerCamera.GetComponent<FirstPersonLook>();
 
@@ -53,6 +58,7 @@ public class TicketBoothInteraction : MonoBehaviour
         popupPanel2.SetActive(false);
         popupPanel3.SetActive(false);
         popupPanel4.SetActive(false);
+        doorPupupPanel.SetActive(false);
     }
 
     public void OpenPopup(GameObject popup)
@@ -88,6 +94,29 @@ public class TicketBoothInteraction : MonoBehaviour
 
         counter++;
         UpdateCounterText();
+
+        isInteracting = false;
+
+        if (playerController != null)
+        {
+            playerController.enabled = true;
+        }
+
+        if (cameraLook != null)
+        {
+            cameraLook.enabled = true;
+        }
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    public void ClosePopupDoor()
+    {
+        if (activePopup == null) return;
+
+        activePopup.SetActive(false);
+        activePopup = null;
 
         isInteracting = false;
 
@@ -141,6 +170,16 @@ public class TicketBoothInteraction : MonoBehaviour
                     {
                         OpenPopup(popupPanel4);
                     }
+                }
+            }
+            else if (hit.collider.CompareTag("Door"))
+            {
+                interactionText.text = "Press [E] to open door";
+                interactionText.gameObject.SetActive(true);
+
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    OpenPopup(doorPupupPanel);
                 }
             }
             else
