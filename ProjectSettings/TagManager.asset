@@ -9,6 +9,11 @@ TagManager:
   - interactable
   - TicketBooth
   - Door
+  - Popup1
+  - Popup2
+  - Popup3
+  - Player1
+  - Player2
   layers:
   - Default
   - TransparentFX
