@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class TicketBoothInteraction : MonoBehaviour
 {
     public float interactionDistance = 0.5f; // Distance to interact
-    private Transform playerCamera;  // Reference to the camera for raycasting
+    public Transform playerCamera;  // Reference to the camera for raycasting
     public TextMeshProUGUI interactionText;
     public Button continueButton;
 
@@ -23,7 +23,7 @@ public class TicketBoothInteraction : MonoBehaviour
     private FirstPersonLook cameraLook;
 
     public TextMeshProUGUI counterText;
-    private int counter = 0;
+    public int counter = 0;
     private bool isInteracting = false;
 
     private GameObject activePopup;
@@ -72,13 +72,13 @@ public class TicketBoothInteraction : MonoBehaviour
         if (playerController != null)
         {
             playerController.enabled = false;
-            Debug.Log("player movement disabled");
+            
         }
 
         if (cameraLook != null)
         {
             cameraLook.enabled = false;
-            Debug.Log("Camera look disabled");
+            
         }
 
         Cursor.lockState = CursorLockMode.None;
@@ -197,5 +197,7 @@ public class TicketBoothInteraction : MonoBehaviour
     void UpdateCounterText()
     {
        counterText.text = "Tickets completed: " + counter + "/4";
+
+        Debug.Log("Counter value: " + counter);
     }
 }
