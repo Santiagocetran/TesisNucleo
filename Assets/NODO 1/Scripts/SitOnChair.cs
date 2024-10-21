@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class SitOnChair : MonoBehaviour
 {
     public Transform sittingPosition;
     public GameObject player;
     public Transform lookAtTarget;
+    public VideoPlayer videoPlayer;
 
     private bool isNearChair = false;
     private bool isSitting = false;
@@ -72,7 +74,15 @@ public class SitOnChair : MonoBehaviour
 
     void StartMovie()
     {
-        Debug.Log("movie starting...");
+       if (videoPlayer != null)
+        {
+            videoPlayer.Play();
+            Debug.Log("movie starting");
+        }
+       else
+        {
+            Debug.LogWarning("no movie");
+        }
     }
 
     private void OnTriggerEnter(Collider other)
