@@ -25,8 +25,12 @@ public class TicketBoothInteraction : MonoBehaviour
     public TextMeshProUGUI counterText;
     public int counter = 0;
     private bool isInteracting = false;
+    private bool hasAllTickets = false;
 
     private GameObject activePopup;
+
+    public Animator leftDoorAnimation;
+    public Animator rightDoorAnimation;
 
     void Start()
     {
@@ -92,9 +96,6 @@ public class TicketBoothInteraction : MonoBehaviour
         activePopup.SetActive(false);
         activePopup = null;
 
-        counter++;
-        UpdateCounterText();
-
         isInteracting = false;
 
         if (playerController != null)
@@ -109,6 +110,8 @@ public class TicketBoothInteraction : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        IncrementCounter();
     }
 
     public void ClosePopupDoor()
@@ -132,6 +135,25 @@ public class TicketBoothInteraction : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    void IncrementCounter()
+    {
+        counter++;
+        UpdateCounterText();
+
+        if (counter >= 4)
+        {
+            hasAllTickets = true;
+            OpenCinemaDoors();
+        }
+    }
+
+    void OpenCinemaDoors()
+    {
+        leftDoorAnimation.SetTrigger("OpenDoor");
+        rightDoorAnimation.SetTrigger("OpenDoor");
+        Debug.Log("doors are opening");
     }
 
     void CheckForBoothInteraction()
@@ -174,12 +196,19 @@ public class TicketBoothInteraction : MonoBehaviour
             }
             else if (hit.collider.CompareTag("Door"))
             {
-                interactionText.text = "Press [E] to open door";
-                interactionText.gameObject.SetActive(true);
-
-                if (Input.GetKeyDown(KeyCode.E))
+                if (!hasAllTickets)
                 {
-                    OpenPopup(doorPupupPanel);
+                    interactionText.text = "Press [E] to open door";
+                    interactionText.gameObject.SetActive(true);
+
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        OpenPopup(doorPupupPanel);
+                    }
+                }                
+                else
+                {
+                    interactionText.gameObject.SetActive(false);
                 }
             }
             else
@@ -192,7 +221,6 @@ public class TicketBoothInteraction : MonoBehaviour
             interactionText.gameObject.SetActive(false);
         }
     }
-
 
     void UpdateCounterText()
     {
