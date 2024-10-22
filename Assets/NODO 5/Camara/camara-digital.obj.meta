@@ -3,7 +3,102 @@ guid: d69dffe58a26ba54a848ea170bd68ca6
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_FrontMat
+    second: {fileID: 2100000, guid: 389387b6579a16743b2b00ff48c20688, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_Main_buttonMat
+    second: {fileID: 2100000, guid: 421b1366da8889d41b9ffec852fe0916, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_Main_button_2Mat
+    second: {fileID: 2100000, guid: 421b1366da8889d41b9ffec852fe0916, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_backMat
+    second: {fileID: 2100000, guid: 389387b6579a16743b2b00ff48c20688, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_buttonsMat
+    second: {fileID: 2100000, guid: 5149af2b53047ad4ba70be9fd53e9cba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_flash_lamp_glass1Mat
+    second: {fileID: 2100000, guid: 0bdf6a79ce47f5745ba887195b5219bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_flash_lamp_metalMat
+    second: {fileID: 2100000, guid: c412e831bde2b2a4d92a280f05be4d5b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_glassMat
+    second: {fileID: 2100000, guid: 0bdf6a79ce47f5745ba887195b5219bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_glass_2Mat
+    second: {fileID: 2100000, guid: 0bdf6a79ce47f5745ba887195b5219bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_glass_3Mat
+    second: {fileID: 2100000, guid: 0bdf6a79ce47f5745ba887195b5219bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_glass_4Mat
+    second: {fileID: 2100000, guid: 0bdf6a79ce47f5745ba887195b5219bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_glass_5Mat
+    second: {fileID: 2100000, guid: 0bdf6a79ce47f5745ba887195b5219bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_lcd_blackMat
+    second: {fileID: 2100000, guid: 389387b6579a16743b2b00ff48c20688, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_lcd_screenMat
+    second: {fileID: 2100000, guid: c412e831bde2b2a4d92a280f05be4d5b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_lens_1Mat
+    second: {fileID: 2100000, guid: e28bc5ad792e8c64a916a6d6b19abecb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_lens_2Mat
+    second: {fileID: 2100000, guid: e28bc5ad792e8c64a916a6d6b19abecb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_lens_3Mat
+    second: {fileID: 2100000, guid: e28bc5ad792e8c64a916a6d6b19abecb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_metal_lineMat
+    second: {fileID: 2100000, guid: 421b1366da8889d41b9ffec852fe0916, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Digital_Camera_rollMat
+    second: {fileID: 2100000, guid: e28bc5ad792e8c64a916a6d6b19abecb, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
