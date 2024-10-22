@@ -71,4 +71,5 @@ public class Character2DController : MonoBehaviour
             }
         }
     }
+
 }
