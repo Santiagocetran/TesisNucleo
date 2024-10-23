@@ -6,18 +6,33 @@ using UnityEngine.UI;
 
 public class TicketBoothInteraction : MonoBehaviour
 {
-    public float interactionDistance = 0.5f; // Distance to interact
-    public Transform playerCamera;  // Reference to the camera for raycasting
+    public float interactionDistance = 0.5f;
+    public Transform playerCamera;
     public TextMeshProUGUI interactionText;
-    public Button continueButton;
+
+    // Separate continue buttons for each popup
+    public Button continueButton1;
+    public Button continueButton2;
+    public Button continueButton3;
+    public Button continueButton4;
 
     public GameObject popupPanel1;
     public GameObject popupPanel2;
     public GameObject popupPanel3;
     public GameObject popupPanel4;
-    public GameObject doorPupupPanel;
 
+    public GameObject doorPopupPanel;
     public Button doorPopupCloseButton;
+
+    public GameObject infoPanel1;
+    public GameObject infoPanel2;
+    public GameObject infoPanel3;
+    public GameObject infoPanel4;
+
+    public Button okButton1;
+    public Button okButton2;
+    public Button okButton3;
+    public Button okButton4;
 
     private FirstPersonMovement playerController;
     private FirstPersonLook cameraLook;
@@ -34,14 +49,20 @@ public class TicketBoothInteraction : MonoBehaviour
 
     void Start()
     {
-        // Get the camera from the First Person Controller
         playerCamera = Camera.main.transform;
-        
         interactionText.gameObject.SetActive(false);
         DeactivateAllPopups();
 
-        continueButton.onClick.RemoveAllListeners();
-        continueButton.onClick.AddListener(ClosePopup);
+        // Assign individual continue button listeners
+        continueButton1.onClick.AddListener(() => CloseMovieSelectionPopup(1));
+        continueButton2.onClick.AddListener(() => CloseMovieSelectionPopup(2));
+        continueButton3.onClick.AddListener(() => CloseMovieSelectionPopup(3));
+        continueButton4.onClick.AddListener(() => CloseMovieSelectionPopup(4));
+
+        okButton1.onClick.AddListener(() => CloseInfoPanel(infoPanel1));
+        okButton2.onClick.AddListener(() => CloseInfoPanel(infoPanel2));
+        okButton3.onClick.AddListener(() => CloseInfoPanel(infoPanel3));
+        okButton4.onClick.AddListener(() => CloseInfoPanel(infoPanel4));
 
         doorPopupCloseButton.onClick.AddListener(ClosePopupDoor);
 
@@ -62,7 +83,11 @@ public class TicketBoothInteraction : MonoBehaviour
         popupPanel2.SetActive(false);
         popupPanel3.SetActive(false);
         popupPanel4.SetActive(false);
-        doorPupupPanel.SetActive(false);
+        infoPanel1.SetActive(false);
+        infoPanel2.SetActive(false);
+        infoPanel3.SetActive(false);
+        infoPanel4.SetActive(false);
+        doorPopupPanel.SetActive(false);
     }
 
     public void OpenPopup(GameObject popup)
@@ -76,26 +101,38 @@ public class TicketBoothInteraction : MonoBehaviour
         if (playerController != null)
         {
             playerController.enabled = false;
-            
         }
 
         if (cameraLook != null)
         {
             cameraLook.enabled = false;
-            
         }
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
-    public void ClosePopup()
+    public void CloseMovieSelectionPopup(int boothNumber)
     {
         if (activePopup == null) return;
 
         activePopup.SetActive(false);
         activePopup = null;
 
+        isInteracting = false;
+
+        IncrementCounter();
+
+        // Open the corresponding movie info panel after closing the movie selection popup
+        if (boothNumber == 1) OpenPopup(infoPanel1);
+        else if (boothNumber == 2) OpenPopup(infoPanel2);
+        else if (boothNumber == 3) OpenPopup(infoPanel3);
+        else if (boothNumber == 4) OpenPopup(infoPanel4);
+    }
+
+    public void CloseInfoPanel(GameObject infoPanel)
+    {
+        infoPanel.SetActive(false);
         isInteracting = false;
 
         if (playerController != null)
@@ -110,8 +147,6 @@ public class TicketBoothInteraction : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        IncrementCounter();
     }
 
     public void ClosePopupDoor()
@@ -163,17 +198,13 @@ public class TicketBoothInteraction : MonoBehaviour
         Ray ray = new Ray(playerCamera.position, playerCamera.forward);
         RaycastHit hit;
 
-        // Check if the ray hits a Ticket Booth within the interaction distance
         if (Physics.Raycast(ray, out hit, interactionDistance))
         {
             if (hit.collider.CompareTag("TicketBooth"))
             {
-
-                // Show prompt (you can customize this)
                 interactionText.text = "Press E to interact";
                 interactionText.gameObject.SetActive(true);
 
-                // Check if the player presses E
                 if (Input.GetKeyDown(KeyCode.E))
                 {
                     if (hit.collider.name == "Booth1")
@@ -203,9 +234,9 @@ public class TicketBoothInteraction : MonoBehaviour
 
                     if (Input.GetKeyDown(KeyCode.E))
                     {
-                        OpenPopup(doorPupupPanel);
+                        OpenPopup(doorPopupPanel);
                     }
-                }                
+                }
                 else
                 {
                     interactionText.gameObject.SetActive(false);
@@ -224,8 +255,7 @@ public class TicketBoothInteraction : MonoBehaviour
 
     void UpdateCounterText()
     {
-       counterText.text = "Tickets completed: " + counter + "/4";
-
+        counterText.text = "Tickets completed: " + counter + "/4";
         Debug.Log("Counter value: " + counter);
     }
 }

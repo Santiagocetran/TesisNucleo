@@ -41,7 +41,7 @@ public class CinemaDoorController : MonoBehaviour
     {
         Debug.Log("OpenDoor method is called");
 
-        ticketBoothInteraction.doorPupupPanel.SetActive(false);
+        ticketBoothInteraction.doorPopupPanel.SetActive(false);
 
         doorAnimator1.SetTrigger("OpenDoor");
         doorAnimator2.SetTrigger("OpenDoor");

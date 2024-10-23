@@ -9,6 +9,8 @@ public class SitOnChair : MonoBehaviour
     public GameObject player;
     public Transform lookAtTarget;
     public VideoPlayer videoPlayer;
+    public GameObject nextLevelTrigger; // GameObject that sends the player to the next level
+    public GameObject sitDownSign; // UI sign for "Press E to sit down"
 
     private bool isNearChair = false;
     private bool isSitting = false;
@@ -22,11 +24,29 @@ public class SitOnChair : MonoBehaviour
         movementScript = player.GetComponent<FirstPersonMovement>();
         lookScript = player.GetComponentInChildren<FirstPersonLook>();
         playerRigidBody = player.GetComponent<Rigidbody>();
+
+        // Subscribe to the movie end event
+        if (videoPlayer != null)
+        {
+            videoPlayer.loopPointReached += OnMovieEnd;
+        }
+
+        // Ensure the next level trigger and sitDownSign are disabled at the start
+        if (nextLevelTrigger != null)
+        {
+            nextLevelTrigger.SetActive(false);
+        }
+
+        if (sitDownSign != null)
+        {
+            sitDownSign.SetActive(false); // Ensure the sign is hidden at the start
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Check if the player is near the chair and presses E
         if (isNearChair && Input.GetKeyDown(KeyCode.E) && !isSitting)
         {
             SitPlayer();
@@ -42,6 +62,12 @@ public class SitOnChair : MonoBehaviour
         {
             playerRigidBody.velocity = Vector3.zero;
             playerRigidBody.isKinematic = true;
+        }
+
+        // Hide the "Press E to sit down" sign when the player sits
+        if (sitDownSign != null)
+        {
+            sitDownSign.SetActive(false);
         }
 
         StartCoroutine(SmoothSit());
@@ -74,14 +100,43 @@ public class SitOnChair : MonoBehaviour
 
     void StartMovie()
     {
-       if (videoPlayer != null)
+        if (videoPlayer != null)
         {
             videoPlayer.Play();
-            Debug.Log("movie starting");
+            Debug.Log("Movie starting");
         }
-       else
+        else
         {
-            Debug.LogWarning("no movie");
+            Debug.LogWarning("No movie assigned");
+        }
+    }
+
+    void OnMovieEnd(VideoPlayer vp)
+    {
+        StandPlayer();
+        ActivateNextLevelTrigger();
+    }
+
+    void StandPlayer()
+    {
+        movementScript.enabled = true;
+        lookScript.enabled = true;
+
+        if (playerRigidBody != null)
+        {
+            playerRigidBody.isKinematic = false;
+        }
+
+        isSitting = false;
+        Debug.Log("Player stood up");
+    }
+
+    void ActivateNextLevelTrigger()
+    {
+        if (nextLevelTrigger != null)
+        {
+            nextLevelTrigger.SetActive(true);
+            Debug.Log("Next level trigger activated");
         }
     }
 
@@ -90,6 +145,12 @@ public class SitOnChair : MonoBehaviour
         if (other.gameObject == player)
         {
             isNearChair = true;
+
+            // Show the "Press E to sit down" sign when the player is near the chair
+            if (!isSitting && sitDownSign != null)
+            {
+                sitDownSign.SetActive(true);
+            }
         }
     }
 
@@ -98,6 +159,12 @@ public class SitOnChair : MonoBehaviour
         if (other.gameObject == player)
         {
             isNearChair = false;
+
+            // Hide the sign when the player moves away from the chair
+            if (sitDownSign != null)
+            {
+                sitDownSign.SetActive(false);
+            }
         }
     }
 }
