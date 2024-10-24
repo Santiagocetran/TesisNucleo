@@ -14,7 +14,7 @@ public class CardHighlight : MonoBehaviour
     private Material originalMaterial;
     public Material highlightMaterial;
 
-    private bool hasCard = false;
+    public bool hasCard = false;
 
     void Start()
     {
