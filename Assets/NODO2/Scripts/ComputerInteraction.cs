@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class ComputerInteraction : MonoBehaviour
 {
@@ -13,29 +15,39 @@ public class ComputerInteraction : MonoBehaviour
 
     private GameObject currentComputer;
 
-    // Reference to the CardHighlight script to check if the player has the card
     public CardHighlight cardHighlight;
 
-    // References for controlling player movement and camera
+    // Player movement and look scripts
     public FirstPersonMovement playerMovement;
     public FirstPersonLook playerLook;
+    public Collider playerCollider; // Reference to the player's collider
+    public Rigidbody playerRigidBody; // Reference to player's Rigidbody
+
+    // Chair position and rotation
+    public Transform chairPosition; // Assign the chair’s Transform in the Inspector
+    public Transform screenCenterPoint; // A Transform positioned at the center of the screen for precise alignment
+
+    // Video Player
+    public VideoPlayer computerVideoPlayer; // Attach the Video Player component here
+
+    private bool isSitting = false;
 
     void Start()
     {
         pressEText.SetActive(false); // Hide "Press E" prompt initially
         popupMessage.SetActive(false); // Hide popup message initially
 
-        // Set up the button click listener
         closeButton.onClick.AddListener(ClosePopup);
-
-        // Ensure cursor is locked initially for FPS gameplay
         LockCursor();
     }
 
     void Update()
     {
-        RaycastForComputer();
-        HandleComputerInteraction();
+        if (!isSitting) // Only allow interaction when not sitting
+        {
+            RaycastForComputer();
+            HandleComputerInteraction();
+        }
     }
 
     void RaycastForComputer()
@@ -47,28 +59,26 @@ public class ComputerInteraction : MonoBehaviour
         {
             GameObject hitComputer = hit.collider.gameObject;
 
-            // If the player is looking at the computer
             if (hitComputer != currentComputer)
             {
                 currentComputer = hitComputer;
-                ShowPressEText(true); // Show "Press E to interact" text when looking at computer
+                ShowPressEText(true);
             }
         }
         else
         {
-            ShowPressEText(false); // Hide "Press E to interact" text when not looking at computer
+            ShowPressEText(false);
             currentComputer = null;
         }
     }
 
     void HandleComputerInteraction()
     {
-        // If player presses E while looking at the computer
         if (Input.GetKeyDown(KeyCode.E) && currentComputer != null)
         {
-            if (cardHighlight.hasCard) // Check if the player has the card
+            if (cardHighlight.hasCard)
             {
-                InteractWithComputer();
+                SitAndInteractWithComputer();
             }
             else
             {
@@ -82,62 +92,111 @@ public class ComputerInteraction : MonoBehaviour
         pressEText.SetActive(show);
     }
 
-    void InteractWithComputer()
+    void SitAndInteractWithComputer()
     {
-        // Code to interact with the computer if the player has the card
         Debug.Log("Player is interacting with the computer.");
-        // Add logic for interacting with the computer here (e.g., open terminal UI)
+        ShowPressEText(false);
+
+        // Disable movement, camera look, and collider for smooth sitting
+        LockPlayerControls();
+        playerCollider.enabled = false;
+        if (playerRigidBody != null)
+        {
+            playerRigidBody.velocity = Vector3.zero;
+            playerRigidBody.isKinematic = true;
+        }
+
+        // Start smooth transition to sitting position
+        StartCoroutine(SmoothSit());
+    }
+
+    IEnumerator SmoothSit()
+    {
+        isSitting = true;
+        float duration = 0.5f;
+        Vector3 startPos = playerMovement.transform.position;
+        Quaternion startRot = playerMovement.transform.rotation;
+        Vector3 endPos = chairPosition.position;
+
+        // Rotate the player to face the screenCenterPoint to ensure it's centered in view
+        Quaternion endRot = Quaternion.LookRotation(screenCenterPoint.position - chairPosition.position);
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            playerMovement.transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
+            playerMovement.transform.rotation = Quaternion.Lerp(startRot, endRot, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the player is exactly in place and facing the screen center
+        playerMovement.transform.position = endPos;
+        playerMovement.transform.rotation = endRot;
+
+        // Start the video once seated
+        StartVideo();
+    }
+
+    void StartVideo()
+    {
+        if (computerVideoPlayer != null)
+        {
+            computerVideoPlayer.Play();
+            Debug.Log("Video starting");
+        }
+        else
+        {
+            Debug.LogWarning("No video assigned to the computer screen.");
+        }
     }
 
     void ShowCluePopup()
     {
-        // Show the popup with the clue
         popupMessage.SetActive(true);
-
-        // Lock player movement and camera
         LockPlayerControls();
-
-        // Unlock the cursor so the player can click the button
         UnlockCursor();
     }
 
     void ClosePopup()
     {
-        // Hide the popup message when the button is clicked
         popupMessage.SetActive(false);
-
-        // Unlock player movement and camera
         UnlockPlayerControls();
-
-        // Lock the cursor back to the center for FPS controls
         LockCursor();
     }
 
     void LockPlayerControls()
     {
-        // Disable movement and camera look scripts
         playerMovement.enabled = false;
         playerLook.enabled = false;
     }
 
     void UnlockPlayerControls()
     {
-        // Re-enable movement and camera look scripts
         playerMovement.enabled = true;
         playerLook.enabled = true;
+
+        // Reactivate player's collider and Rigidbody
+        playerCollider.enabled = true;
+        if (playerRigidBody != null)
+        {
+            playerRigidBody.isKinematic = false;
+        }
+
+        isSitting = false;
+        Debug.Log("Player stood up");
     }
 
-    // Unlock the cursor so the player can click the UI
     void UnlockCursor()
     {
-        Cursor.lockState = CursorLockMode.None; // Unlock the cursor
-        Cursor.visible = true; // Make cursor visible
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
-    // Lock the cursor for FPS gameplay
     void LockCursor()
     {
-        Cursor.lockState = CursorLockMode.Locked; // Lock the cursor to the center
-        Cursor.visible = false; // Hide the cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 }
