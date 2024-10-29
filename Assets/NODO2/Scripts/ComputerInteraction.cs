@@ -29,8 +29,18 @@ public class ComputerInteraction : MonoBehaviour
 
     // Video Player
     public VideoPlayer computerVideoPlayer; // Attach the Video Player component here
+    public VideoPlayer secondVideoPlayer;
 
     private bool isSitting = false;
+
+    // Define the time (in seconds) where you want to pause the video
+    public double pauseTimestamp = 44.9; // Adjust to your target time
+    private bool hasPausedAtTimestamp = false;
+    private bool isVideoResumed = false;
+
+    public GameObject crosshair;
+
+    public GameObject hiddenObject;
 
     void Start()
     {
@@ -39,6 +49,16 @@ public class ComputerInteraction : MonoBehaviour
 
         closeButton.onClick.AddListener(ClosePopup);
         LockCursor();
+
+        // Subscribe to the end of the first video to start the second video
+        if (computerVideoPlayer != null && secondVideoPlayer != null)
+        {
+            computerVideoPlayer.loopPointReached += OnFirstVideoFinished;
+            secondVideoPlayer.enabled = false; // Disable second video initially
+
+            // Subscribe to the end of the second video to make the player stand up
+            secondVideoPlayer.loopPointReached += OnSecondVideoFinished;
+        }
     }
 
     void Update()
@@ -47,6 +67,25 @@ public class ComputerInteraction : MonoBehaviour
         {
             RaycastForComputer();
             HandleComputerInteraction();
+        }
+        else
+        {
+            // Check if we should pause the video
+            if (computerVideoPlayer.isPlaying && !hasPausedAtTimestamp && !isVideoResumed)
+            {
+                CheckForPausePoint();
+            }
+
+            // Check for "V" key press to resume the video if it has already paused at the pauseTimestamp
+            if (hasPausedAtTimestamp)
+            {
+                Debug.Log("Waiting for V key press to resume video...");
+                if (Input.GetKeyDown(KeyCode.V))
+                {
+                    Debug.Log("V key detected - attempting to resume video.");
+                    ResumeVideo();
+                }
+            }
         }
     }
 
@@ -97,6 +136,12 @@ public class ComputerInteraction : MonoBehaviour
         Debug.Log("Player is interacting with the computer.");
         ShowPressEText(false);
 
+        // Disable the crosshair
+        if (crosshair != null)
+        {
+            crosshair.SetActive(false);
+        }
+
         // Disable movement, camera look, and collider for smooth sitting
         LockPlayerControls();
         playerCollider.enabled = false;
@@ -138,6 +183,18 @@ public class ComputerInteraction : MonoBehaviour
         // Start the video once seated
         StartVideo();
     }
+
+    void OnFirstVideoFinished(VideoPlayer vp)
+    {
+        // Hide the first video and start the second video
+        Debug.Log("First video finished. Starting second video.");
+
+        // Disable the first VideoPlayer and enable the second one
+        computerVideoPlayer.enabled = false;
+        secondVideoPlayer.enabled = true;
+        secondVideoPlayer.Play();
+    }
+
 
     void StartVideo()
     {
@@ -198,5 +255,70 @@ public class ComputerInteraction : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    void CheckResumeInput()
+    {
+        if (hasPausedAtTimestamp)
+        {
+            Debug.Log("Waiting for V key press to resume video...");
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                Debug.Log("V key detected - attempting to resume video.");
+                ResumeVideo();
+            }
+        }
+    }
+
+    void CheckForPausePoint()
+    {
+        if (computerVideoPlayer.time >= pauseTimestamp)
+        {
+            PauseVideo();
+        }
+    }
+
+    void PauseVideo()
+    {
+        computerVideoPlayer.Pause();
+        hasPausedAtTimestamp = true;
+        isVideoResumed = false; // Reset resume flag for next pause-resume cycle
+        Debug.Log("Video paused. Press 'V' to continue.");
+    }
+
+    void ResumeVideo()
+    {
+        computerVideoPlayer.Play();
+        hasPausedAtTimestamp = false; // Reset pause flag
+        isVideoResumed = true; // Set resume flag to bypass future pause checks
+        Debug.Log("Video resumed.");
+    }
+
+    void OnSecondVideoFinished(VideoPlayer vp)
+    {
+        Debug.Log("Second video finished. Player will stand up.");
+        StandUp();
+    }
+
+    void StandUp()
+    {
+        // Enable movement and look controls
+        UnlockPlayerControls();
+
+        // Show the crosshair again
+        if (crosshair != null)
+        {
+            crosshair.SetActive(true);
+        }
+
+        // Activate the hidden object
+        if (hiddenObject != null)
+        {
+            hiddenObject.SetActive(true);
+            Debug.Log("Hidden object is now visible.");
+        }
+
+        UnlockCursor();
+        Debug.Log("Player has stood up and can move again.");
     }
 }
