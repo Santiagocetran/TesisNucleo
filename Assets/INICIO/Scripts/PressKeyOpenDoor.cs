@@ -38,10 +38,10 @@ public class PressKeyOpenDoor : MonoBehaviour
 
     void OnTriggerExit(Collider collision)
     {
-        Instruction.SetActive(false);
         Action = false;
         PasswordPopup.SetActive(false);
         EnablePlayerControl(); // Re-enable control when leaving the area
+        Instruction.SetActive(false);
     }
 
     void Update()
@@ -73,8 +73,8 @@ public class PressKeyOpenDoor : MonoBehaviour
         if (PasswordInputField.text == correctPassword)
         {
             // Correct password, open the door
-            AnimeObject.GetComponent<Animator>().Play("FenceOpen");
-            AnimeObject2.GetComponent<Animator>().Play("FenceOpen2");
+            AnimeObject.GetComponent<Animator>().Play("BarreraLaser1");
+            AnimeObject2.GetComponent<Animator>().Play("BarreraLaser2");
             PasswordPopup.SetActive(false);
             EnablePlayerControl(); // Re-enable player movement and camera
             Action = false;
