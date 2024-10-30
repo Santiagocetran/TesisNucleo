@@ -6,9 +6,9 @@ public class CardHighlight : MonoBehaviour
     public Camera playerCamera;
     public float rayDistance = 5f;
     public LayerMask cardLayer;
-    public GameObject pressEText; // UI Text for "Press E to grab"
-    public Image cardIcon; // UI icon that appears when the card is grabbed
-    public Sprite cardSprite; // The card icon sprite
+    public GameObject pressEText;       // UI Text for "Press E to grab"
+    public Image cardIcon;              // UI icon that appears when the card is grabbed
+    public Sprite cardSprite;           // The card icon sprite
 
     private GameObject currentCard;
     private Material originalMaterial;
@@ -16,16 +16,33 @@ public class CardHighlight : MonoBehaviour
 
     public bool hasCard = false;
 
+    // New UI elements for the popup
+    public GameObject cardPopup;        // Popup panel for enlarged card view
+    public Image cardPopupImage;        // Image component to show the enlarged card
+    public Button closeButton;          // Button to close the popup
+
+    private bool isPopupActive = false; // Flag to track if popup is active
+
+    // Player movement and look scripts
+    public FirstPersonMovement playerMovement;
+    public FirstPersonLook playerLook;
+
     void Start()
     {
-        pressEText.SetActive(false); // Hide "Press E" prompt initially
-        cardIcon.enabled = false;    // Hide card icon initially
+        pressEText.SetActive(false);       // Hide "Press E" prompt initially
+        cardIcon.enabled = false;          // Hide card icon initially
+        cardPopup.SetActive(false);        // Hide card popup initially
+
+        closeButton.onClick.AddListener(ClosePopup);  // Add listener for the Close button
     }
 
     void Update()
     {
-        RaycastForCard();
-        HandleCardGrab();
+        if (!isPopupActive)
+        {
+            RaycastForCard();
+            HandleCardGrab();
+        }
     }
 
     void RaycastForCard()
@@ -104,5 +121,44 @@ public class CardHighlight : MonoBehaviour
 
         // Hide "Press E to grab" text
         ShowPressEText(false);
+
+        // Show popup with enlarged card details
+        ShowCardPopup();
+    }
+
+    void ShowCardPopup()
+    {
+        cardPopupImage.sprite = cardSprite;   // Set the popup image to the card's sprite
+        cardPopup.SetActive(true);            // Show the popup
+        isPopupActive = true;                 // Set popup active flag to true
+
+        // Lock player movement and camera
+        LockPlayerControls(true);
+
+        // Show and unlock the cursor
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    void ClosePopup()
+    {
+        cardPopup.SetActive(false);           // Hide the popup
+        isPopupActive = false;                // Set popup active flag to false
+
+        // Unlock player movement and camera
+        LockPlayerControls(false);
+
+        // Hide and lock the cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        playerMovement.enabled = true;
+        playerLook.enabled = true;
+    }
+
+    void LockPlayerControls(bool lockControls)
+    {
+        playerMovement.enabled = false;
+        playerLook.enabled = false;
     }
 }

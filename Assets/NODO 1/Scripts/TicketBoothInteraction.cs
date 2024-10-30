@@ -47,6 +47,7 @@ public class TicketBoothInteraction : MonoBehaviour
     public Animator leftDoorAnimation;
     public Animator rightDoorAnimation;
 
+    public AudioSource doorAudioSource;
     void Start()
     {
         playerCamera = Camera.main.transform;
@@ -189,6 +190,12 @@ public class TicketBoothInteraction : MonoBehaviour
         leftDoorAnimation.SetTrigger("OpenDoor");
         rightDoorAnimation.SetTrigger("OpenDoor");
         Debug.Log("doors are opening");
+
+        // Stop the audio when the door opens
+        if (doorAudioSource != null && doorAudioSource.isPlaying)
+        {
+            doorAudioSource.Stop();
+        }
     }
 
     void CheckForBoothInteraction()

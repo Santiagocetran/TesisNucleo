@@ -42,6 +42,8 @@ public class ComputerInteraction : MonoBehaviour
 
     public GameObject hiddenObject;
 
+    public AudioSource AudioSource;
+
     void Start()
     {
         pressEText.SetActive(false); // Hide "Press E" prompt initially
@@ -118,6 +120,11 @@ public class ComputerInteraction : MonoBehaviour
             if (cardHighlight.hasCard)
             {
                 SitAndInteractWithComputer();
+                // Stop the audio when the door opens
+                if (AudioSource != null && AudioSource.isPlaying)
+                {
+                    AudioSource.Stop();
+                }
             }
             else
             {

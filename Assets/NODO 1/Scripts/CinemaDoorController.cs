@@ -6,6 +6,7 @@ public class CinemaDoorController : MonoBehaviour
 {
     public Animator doorAnimator1;
     public Animator doorAnimator2;
+    public AudioSource doorAudioSource;
 
     private bool isDoorOpened = false;
 
@@ -45,6 +46,12 @@ public class CinemaDoorController : MonoBehaviour
 
         doorAnimator1.SetTrigger("OpenDoor");
         doorAnimator2.SetTrigger("OpenDoor");
+
+        // Stop the audio when the door opens
+        if (doorAudioSource != null && doorAudioSource.isPlaying)
+        {
+            doorAudioSource.Stop();
+        }
 
         isDoorOpened = true;
 
