@@ -1234,9 +1234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   jumpForce: 5
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 256
+  jumpInterval: 1
   characterRight: {fileID: 21300000, guid: e1d4af5f0a4730340a34be888c658d4a, type: 3}
   characterWalkRight: {fileID: 21300000, guid: 4a4ce89c96cd9534192c88dedf945a15, type: 3}
   characterLeft: {fileID: 21300000, guid: a9e6ece3df882474fb7cf46c88363582, type: 3}
