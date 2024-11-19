@@ -24,8 +24,9 @@ public class Character2DController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        gameObject.tag = "Player"; // Tag this GameObject as "Player"
     }
 
     void Update()
