@@ -4,7 +4,7 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform target;  // El personaje a seguir
     public float smoothSpeed = 0.125f;
-    public Vector3 offset = new Vector3(2, 2, 0); // Adjust as needed
+    public Vector3 offset = new Vector3(0, 0, 0); // Adjust as needed
 
 
 

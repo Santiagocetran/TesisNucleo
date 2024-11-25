@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NODO5.unity
     guid: 7426ebb22dfd74a45a9caa29f3d6bf0c
+  - enabled: 1
+    path: Assets/Scenes/NODO_NUCLEO.unity
+    guid: 820b76522ad5070498d49bed4ff3b463
   m_configObjects: {}
