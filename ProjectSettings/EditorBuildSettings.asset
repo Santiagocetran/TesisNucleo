@@ -14,4 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/NODO2.unity
     guid: aeacd88fd9f3adc41bf3bb492759fbd7
+  - enabled: 1
+    path: Assets/Scenes/NODO 4.unity
+    guid: bd9e69096c40e4e4bbfb89a88a6ccded
+  - enabled: 1
+    path: Assets/Scenes/NODO5.unity
+    guid: 7426ebb22dfd74a45a9caa29f3d6bf0c
   m_configObjects: {}
