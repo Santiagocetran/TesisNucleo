@@ -11084,7 +11084,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1203120197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11097,7 +11097,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb414cae64a3dd940810b6d3d89b1d46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scenename: NODO2
+  scenename: NODO 4
 --- !u!65 &1203120198
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21696,7 +21696,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.46
+      value: 3.98
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_LocalRotation.w
