@@ -26,8 +26,8 @@ TagManager:
   - Interactable
   - computerLayer
   - Ground
-  - 
-  - 
+  - Grabbable
+  - collisionLayer
   - 
   - 
   - 

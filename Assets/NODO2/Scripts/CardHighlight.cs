@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class CardHighlight : MonoBehaviour
 {
     public Camera playerCamera;
-    public float rayDistance = 5f;
+    public float rayDistance = 1f;
     public LayerMask cardLayer;
     public GameObject pressEText;       // UI Text for "Press E to grab"
     public Image cardIcon;              // UI icon that appears when the card is grabbed
