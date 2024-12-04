@@ -21,6 +21,12 @@ public class ObjectGrabber : MonoBehaviour
     private Vector3 lastValidPosition;
     private bool isSliding;
 
+    // Add this new method
+    public bool IsHoldingObject(GameObject obj)
+    {
+        return heldObject == obj;
+    }
+
     void Start()
     {
         playerCamera = GetComponentInChildren<Camera>();
