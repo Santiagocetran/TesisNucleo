@@ -9,13 +9,13 @@ public class Room : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         GrabbableObject grabbable = other.GetComponent<GrabbableObject>();
-        if (grabbable != null && !grabbable.isCorrectlyPlaced) // Check if not already placed
+        if (grabbable != null && !grabbable.isCorrectlyPlaced)
         {
             if (grabbable.destinationRoomNumber == roomNumber)
             {
                 Debug.Log($"Object placed in correct room! Room {roomNumber}");
                 grabbable.LockInPlace();
-                // You could add effects here (particles, sounds, etc.)
+                PopupSequenceManager.Instance.StartSequence(grabbable.objectID);
             }
         }
     }

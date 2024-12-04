@@ -8,6 +8,8 @@ public class GrabbableObject : MonoBehaviour
     public bool isCorrectlyPlaced = false; // New variable to track placement status
     private ParticleSystem particleEffect; // Reference to the particle system
 
+    public int popupID;
+    public int objectID;
     private void Start()
     {
         // Get the ParticleSystem component (either on this object or in children)
@@ -42,5 +44,10 @@ public class GrabbableObject : MonoBehaviour
             rb.isKinematic = true;
             rb.useGravity = false;
         }
+    }
+
+    public void ShowObjectPopup()
+    {
+        PopupManager.Instance.ShowPopup(popupID);
     }
 }

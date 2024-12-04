@@ -220,6 +220,9 @@ public class ObjectGrabber : MonoBehaviour
                 if (grabbable.isCorrectlyPlaced)
                     return;
 
+                // Show popup when object is grabbed
+                grabbable.ShowObjectPopup();
+
                 // Deactivate particles when grabbed
                 grabbable.SetParticleEffect(false);
             }
