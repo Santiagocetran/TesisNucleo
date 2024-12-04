@@ -6,11 +6,31 @@ public class GrabbableObject : MonoBehaviour
 {
     public int destinationRoomNumber;
     public bool isCorrectlyPlaced = false; // New variable to track placement status
+    private ParticleSystem particleEffect; // Reference to the particle system
+
+    private void Start()
+    {
+        // Get the ParticleSystem component (either on this object or in children)
+        particleEffect = GetComponentInChildren<ParticleSystem>();
+    }
+
+    // Method to control particle effect
+    public void SetParticleEffect(bool active)
+    {
+        if (particleEffect != null)
+        {
+            if (active)
+                particleEffect.Play();
+            else
+                particleEffect.Stop();
+        }
+    }
 
     // Add this method to make the object unmovable
     public void LockInPlace()
     {
         isCorrectlyPlaced = true;
+        SetParticleEffect(false); // Turn off particles when locked
 
         // Disable the grabbable layer
         gameObject.layer = LayerMask.NameToLayer("Default");

@@ -215,9 +215,13 @@ public class ObjectGrabber : MonoBehaviour
             GameObject targetObject = GetGrabbableParent(hit.collider.gameObject);
 
             GrabbableObject grabbable = targetObject.GetComponent<GrabbableObject>();
-            if (grabbable != null && grabbable.isCorrectlyPlaced)
+            if (grabbable != null)
             {
-                return;
+                if (grabbable.isCorrectlyPlaced)
+                    return;
+
+                // Deactivate particles when grabbed
+                grabbable.SetParticleEffect(false);
             }
 
             heldObject = targetObject;
@@ -235,39 +239,44 @@ public class ObjectGrabber : MonoBehaviour
 
     void DropObject()
     {
-        if (heldRigidbody != null)
+        if (heldObject != null)
         {
-            // Ensure object is at a valid position before dropping
-            heldObject.transform.position = lastValidPosition;
-
-            heldRigidbody.useGravity = true;
-            heldRigidbody.isKinematic = false;
-
-            // Check if the object is inside something before dropping
-            Collider objectCollider = heldObject.GetComponent<Collider>();
-            if (objectCollider != null)
+            // Reactivate particles when dropped (only if not correctly placed)
+            GrabbableObject grabbable = heldObject.GetComponent<GrabbableObject>();
+            if (grabbable != null && !grabbable.isCorrectlyPlaced)
             {
-                // Get all colliders the object might be overlapping with
-                Collider[] overlapping = Physics.OverlapBox(
-                    objectCollider.bounds.center,
-                    objectCollider.bounds.extents,
-                    heldObject.transform.rotation
-                );
+                grabbable.SetParticleEffect(true);
+            }
 
-                // If object is inside something, move it to the last valid position
-                if (overlapping.Length > 1) // > 1 because it includes the object's own collider
+            // Rest of your existing drop code...
+            if (heldRigidbody != null)
+            {
+                heldObject.transform.position = lastValidPosition;
+                heldRigidbody.useGravity = true;
+                heldRigidbody.isKinematic = false;
+
+                Collider objectCollider = heldObject.GetComponent<Collider>();
+                if (objectCollider != null)
                 {
-                    // Try to find a safe position above the current position
-                    RaycastHit hit;
-                    if (Physics.Raycast(heldObject.transform.position + Vector3.up * 2f, Vector3.down, out hit))
+                    Collider[] overlapping = Physics.OverlapBox(
+                        objectCollider.bounds.center,
+                        objectCollider.bounds.extents,
+                        heldObject.transform.rotation
+                    );
+
+                    if (overlapping.Length > 1)
                     {
-                        heldObject.transform.position = hit.point + Vector3.up * 0.1f;
+                        RaycastHit hit;
+                        if (Physics.Raycast(heldObject.transform.position + Vector3.up * 2f, Vector3.down, out hit))
+                        {
+                            heldObject.transform.position = hit.point + Vector3.up * 0.1f;
+                        }
                     }
                 }
             }
-        }
 
-        heldObject = null;
-        heldRigidbody = null;
+            heldObject = null;
+            heldRigidbody = null;
+        }
     }
 }
