@@ -31,18 +31,27 @@ public class GrabbableObject : MonoBehaviour
     // Add this method to make the object unmovable
     public void LockInPlace()
     {
-        isCorrectlyPlaced = true;
-        SetParticleEffect(false); // Turn off particles when locked
-
-        // Disable the grabbable layer
-        gameObject.layer = LayerMask.NameToLayer("Default");
-
-        // Make the rigidbody kinematic and unmovable
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null)
+        if (!isCorrectlyPlaced) // Only count it if it wasn't already placed
         {
-            rb.isKinematic = true;
-            rb.useGravity = false;
+            isCorrectlyPlaced = true;
+            SetParticleEffect(false);
+
+            // Disable the grabbable layer
+            gameObject.layer = LayerMask.NameToLayer("Default");
+
+            // Make the rigidbody kinematic and unmovable
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = true;
+                rb.useGravity = false;
+            }
+
+            // Notify the manager that this object is correctly placed
+            if (ObjectPlacementManager.Instance != null)
+            {
+                ObjectPlacementManager.Instance.ObjectCorrectlyPlaced();
+            }
         }
     }
 
