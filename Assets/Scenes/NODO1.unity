@@ -21933,7 +21933,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 455669944}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.144, y: 0.891, z: -0.395}
+  m_LocalPosition: {x: 2.164, y: 0.913, z: -0.395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36128,7 +36128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.81
+      value: 5.88
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -81224,6 +81224,8 @@ MonoBehaviour:
   videoPlayer: {fileID: 2056746968}
   nextLevelTrigger: {fileID: 247092132}
   sitDownSign: {fileID: 1539487225}
+  playerCamera: {fileID: 1056718099}
+  cameraTransitionSpeed: 2
 --- !u!65 &1670331401
 BoxCollider:
   m_ObjectHideFlags: 0
