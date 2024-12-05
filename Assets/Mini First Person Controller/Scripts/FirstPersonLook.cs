@@ -9,6 +9,10 @@ public class FirstPersonLook : MonoBehaviour
     Vector2 velocity;
     Vector2 frameVelocity;
 
+    // Store initial rotations
+    private Vector3 initialCameraRotation;
+    private Vector3 initialCharacterRotation;
+
     // Store last known rotation
     private Quaternion lastCameraRotation;
     private Quaternion lastCharacterRotation;
@@ -20,6 +24,18 @@ public class FirstPersonLook : MonoBehaviour
 
     void Start()
     {
+        // Store initial rotations as euler angles
+        initialCameraRotation = transform.localEulerAngles;
+        initialCharacterRotation = character.localEulerAngles;
+
+        // Set initial velocity based on the starting rotation
+        velocity.x = initialCharacterRotation.y;
+        velocity.y = -initialCameraRotation.x;
+
+        // Initialize last known rotations
+        lastCameraRotation = transform.localRotation;
+        lastCharacterRotation = character.localRotation;
+
         Cursor.lockState = CursorLockMode.Locked;
     }
 

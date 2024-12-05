@@ -14,6 +14,23 @@ public class GrabbableObject : MonoBehaviour
     {
         // Get the ParticleSystem component (either on this object or in children)
         particleEffect = GetComponentInChildren<ParticleSystem>();
+
+        // Make sure prompt starts hidden
+        if (promptCanvas != null)
+        {
+            promptCanvas.enabled = false;
+        }
+    }
+
+    [Header("Interaction Prompt")]
+    [SerializeField] private Canvas promptCanvas;
+
+    public void SetPromptVisibility(bool visible)
+    {
+        if (promptCanvas != null)
+        {
+            promptCanvas.enabled = visible && !isCorrectlyPlaced;
+        }
     }
 
     // Method to control particle effect
@@ -35,6 +52,7 @@ public class GrabbableObject : MonoBehaviour
         {
             isCorrectlyPlaced = true;
             SetParticleEffect(false);
+            SetPromptVisibility(false);
 
             // Disable the grabbable layer
             gameObject.layer = LayerMask.NameToLayer("Default");

@@ -59,18 +59,46 @@ public class ObjectGrabber : MonoBehaviour
         {
             GameObject targetObject = GetGrabbableParent(hit.collider.gameObject);
 
+            // Handle highlight
             if (lastHighlightedObject != targetObject)
             {
+                // Hide prompt on previous object if it exists
+                if (lastHighlightedObject != null)
+                {
+                    var lastGrabbable = lastHighlightedObject.GetComponent<GrabbableObject>();
+                    if (lastGrabbable != null)
+                    {
+                        lastGrabbable.SetPromptVisibility(false);
+                    }
+                }
+
                 RemoveHighlight();
                 lastHighlightedObject = targetObject;
                 AddHighlight(lastHighlightedObject);
+
+                // Show prompt on new target object
+                var grabbable = targetObject.GetComponent<GrabbableObject>();
+                if (grabbable != null && !grabbable.isCorrectlyPlaced && heldObject == null)
+                {
+                    grabbable.SetPromptVisibility(true);
+                }
             }
         }
         else
         {
+            // Hide prompt when no object in range
+            if (lastHighlightedObject != null)
+            {
+                var grabbable = lastHighlightedObject.GetComponent<GrabbableObject>();
+                if (grabbable != null)
+                {
+                    grabbable.SetPromptVisibility(false);
+                }
+            }
             RemoveHighlight();
         }
     }
+
 
     void UpdateHeldObjectPosition()
     {
@@ -226,6 +254,8 @@ public class ObjectGrabber : MonoBehaviour
                 if (grabbable.isCorrectlyPlaced)
                     return;
 
+                grabbable.SetPromptVisibility(false);
+
                 // Show popup when object is grabbed
                 grabbable.ShowObjectPopup();
 
@@ -250,11 +280,19 @@ public class ObjectGrabber : MonoBehaviour
     {
         if (heldObject != null)
         {
-            // Reactivate particles when dropped (only if not correctly placed)
             GrabbableObject grabbable = heldObject.GetComponent<GrabbableObject>();
-            if (grabbable != null && !grabbable.isCorrectlyPlaced)
+            if (grabbable != null)
             {
-                grabbable.SetParticleEffect(true);
+                if (!grabbable.isCorrectlyPlaced)
+                {
+                    grabbable.SetParticleEffect(true);
+                    // Show prompt again if in range
+                    float distanceToPlayer = Vector3.Distance(playerCamera.transform.position, heldObject.transform.position);
+                    if (distanceToPlayer <= grabDistance)
+                    {
+                        grabbable.SetPromptVisibility(true);
+                    }
+                }
             }
 
             // Rest of your existing drop code...
