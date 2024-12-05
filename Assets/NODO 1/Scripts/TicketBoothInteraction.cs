@@ -209,7 +209,7 @@ public class TicketBoothInteraction : MonoBehaviour
         {
             if (hit.collider.CompareTag("TicketBooth"))
             {
-                interactionText.text = "Press E to interact";
+                interactionText.text = "Presiona E para interactuar";
                 interactionText.gameObject.SetActive(true);
 
                 if (Input.GetKeyDown(KeyCode.E))
@@ -236,7 +236,7 @@ public class TicketBoothInteraction : MonoBehaviour
             {
                 if (!hasAllTickets)
                 {
-                    interactionText.text = "Press [E] to open door";
+                    interactionText.text = "Presiona E para abrir la puerta";
                     interactionText.gameObject.SetActive(true);
 
                     if (Input.GetKeyDown(KeyCode.E))
@@ -262,7 +262,7 @@ public class TicketBoothInteraction : MonoBehaviour
 
     void UpdateCounterText()
     {
-        counterText.text = "Tickets completed: " + counter + "/4";
+        counterText.text = counter + "/4";
         Debug.Log("Counter value: " + counter);
     }
 }
