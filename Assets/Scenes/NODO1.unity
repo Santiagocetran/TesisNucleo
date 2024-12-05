@@ -36128,7 +36128,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.88
+      value: 6.19
       objectReference: {fileID: 0}
     - target: {fileID: 4207293392497186, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -81225,7 +81225,8 @@ MonoBehaviour:
   nextLevelTrigger: {fileID: 247092132}
   sitDownSign: {fileID: 1539487225}
   playerCamera: {fileID: 1056718099}
-  cameraTransitionSpeed: 2
+  transitionDuration: 0.5
+  maxStepsPerFrame: 10
 --- !u!65 &1670331401
 BoxCollider:
   m_ObjectHideFlags: 0

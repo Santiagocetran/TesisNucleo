@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -11,13 +10,13 @@ public class SitOnChair : MonoBehaviour
     public VideoPlayer videoPlayer;
     public GameObject nextLevelTrigger;
     public GameObject sitDownSign;
-
-    [Header("Camera Settings")]
-    public Transform playerCamera; // Reference to the actual camera transform
-    public float cameraTransitionSpeed = 2f; // Speed at which the camera rotates
+    public Transform playerCamera;
+    public float transitionDuration = 0.5f;
+    public float maxStepsPerFrame = 10f; // Limit calculations per frame
 
     private bool isNearChair = false;
     private bool isSitting = false;
+    private bool isTransitioning = false;
     private FirstPersonMovement movementScript;
     private FirstPersonLook lookScript;
     private Rigidbody playerRigidBody;
@@ -26,11 +25,15 @@ public class SitOnChair : MonoBehaviour
 
     void Start()
     {
+        InitializeComponents();
+    }
+
+    void InitializeComponents()
+    {
         movementScript = player.GetComponent<FirstPersonMovement>();
         lookScript = player.GetComponentInChildren<FirstPersonLook>();
         playerRigidBody = player.GetComponent<Rigidbody>();
 
-        // Store original camera transform relative to player
         if (playerCamera != null)
         {
             originalCameraLocalPosition = playerCamera.localPosition;
@@ -55,13 +58,22 @@ public class SitOnChair : MonoBehaviour
 
     void Update()
     {
-        if (isNearChair && Input.GetKeyDown(KeyCode.E) && !isSitting)
+        if (isNearChair && Input.GetKeyDown(KeyCode.E) && !isSitting && !isTransitioning)
         {
             SitPlayer();
         }
     }
 
     void SitPlayer()
+    {
+        if (!isTransitioning)
+        {
+            DisablePlayerControls();
+            StartCoroutine(SmoothTransition(true));
+        }
+    }
+
+    void DisablePlayerControls()
     {
         movementScript.enabled = false;
         lookScript.enabled = false;
@@ -76,85 +88,81 @@ public class SitOnChair : MonoBehaviour
         {
             sitDownSign.SetActive(false);
         }
-
-        StartCoroutine(SmoothSitWithCamera());
     }
 
-    IEnumerator SmoothSitWithCamera()
+    IEnumerator SmoothTransition(bool isSitting)
     {
-        float duration = 0.5f;
+        isTransitioning = true;
         float elapsedTime = 0f;
+        int steps = 0;
 
-        // Starting positions and rotations
-        Vector3 playerStartPos = player.transform.position;
-        Quaternion playerStartRot = player.transform.rotation;
-        Vector3 cameraStartPos = playerCamera.position;
-        Quaternion cameraStartRot = playerCamera.rotation;
-
-        // Calculate target rotations
-        Vector3 directionToScreen = (lookAtTarget.position - sittingPosition.position).normalized;
-        Quaternion targetPlayerRotation = Quaternion.LookRotation(directionToScreen);
-
-        // Calculate the target camera position and rotation
-        Vector3 targetCameraPosition = sittingPosition.position + originalCameraLocalPosition;
-        Quaternion targetCameraRotation = Quaternion.LookRotation(lookAtTarget.position - targetCameraPosition);
-
-        while (elapsedTime < duration)
-        {
-            float t = elapsedTime / duration;
-
-            // Smooth interpolation for player position and rotation
-            player.transform.position = Vector3.Lerp(playerStartPos, sittingPosition.position, t);
-            player.transform.rotation = Quaternion.Lerp(playerStartRot, targetPlayerRotation, t);
-
-            // Smooth interpolation for camera
-            playerCamera.position = Vector3.Lerp(cameraStartPos, targetCameraPosition, t);
-            playerCamera.rotation = Quaternion.Lerp(cameraStartRot, targetCameraRotation, t);
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // Ensure final positions and rotations are exact
-        player.transform.position = sittingPosition.position;
-        player.transform.rotation = targetPlayerRotation;
-        playerCamera.position = targetCameraPosition;
-        playerCamera.rotation = targetCameraRotation;
-
-        isSitting = true;
-        StartMovie();
-    }
-
-    void StandPlayer()
-    {
-        StartCoroutine(SmoothStandWithCamera());
-    }
-
-    IEnumerator SmoothStandWithCamera()
-    {
-        float duration = 0.5f;
-        float elapsedTime = 0f;
-
+        // Cache start positions
+        Vector3 startPlayerPos = player.transform.position;
+        Quaternion startPlayerRot = player.transform.rotation;
         Vector3 startCameraPos = playerCamera.position;
         Quaternion startCameraRot = playerCamera.rotation;
 
-        // Reset to original camera local transform
-        Vector3 targetCameraPosition = player.transform.TransformPoint(originalCameraLocalPosition);
-        Quaternion targetCameraRotation = player.transform.rotation * originalCameraLocalRotation;
+        // Calculate target positions
+        Vector3 targetPlayerPos = isSitting ? sittingPosition.position : startPlayerPos;
+        Vector3 directionToScreen = (lookAtTarget.position - sittingPosition.position).normalized;
+        Quaternion targetPlayerRot = isSitting ?
+            Quaternion.LookRotation(directionToScreen) :
+            startPlayerRot;
 
-        while (elapsedTime < duration)
+        Vector3 targetCameraPos = isSitting ?
+            sittingPosition.position + originalCameraLocalPosition :
+            player.transform.TransformPoint(originalCameraLocalPosition);
+
+        Quaternion targetCameraRot = isSitting ?
+            Quaternion.LookRotation(lookAtTarget.position - targetCameraPos) :
+            player.transform.rotation * originalCameraLocalRotation;
+
+        while (elapsedTime < transitionDuration)
         {
-            float t = elapsedTime / duration;
+            // Limit calculations per frame
+            if (steps >= maxStepsPerFrame)
+            {
+                steps = 0;
+                yield return new WaitForEndOfFrame();
+            }
 
-            // Smooth interpolation for camera return
-            playerCamera.position = Vector3.Lerp(startCameraPos, targetCameraPosition, t);
-            playerCamera.rotation = Quaternion.Lerp(startCameraRot, targetCameraRotation, t);
+            float t = elapsedTime / transitionDuration;
+            t = Mathf.SmoothStep(0, 1, t); // Smooth out the transition
+
+            // Update positions with frame independent timing
+            player.transform.position = Vector3.Lerp(startPlayerPos, targetPlayerPos, t);
+            player.transform.rotation = Quaternion.Lerp(startPlayerRot, targetPlayerRot, t);
+            playerCamera.position = Vector3.Lerp(startCameraPos, targetCameraPos, t);
+            playerCamera.rotation = Quaternion.Lerp(startCameraRot, targetCameraRot, t);
 
             elapsedTime += Time.deltaTime;
-            yield return null;
+            steps++;
+
+            // Add a small delay between heavy calculations
+            yield return new WaitForSeconds(0.001f);
         }
 
-        // Re-enable player control
+        // Ensure final positions are exact
+        player.transform.position = targetPlayerPos;
+        player.transform.rotation = targetPlayerRot;
+        playerCamera.position = targetCameraPos;
+        playerCamera.rotation = targetCameraRot;
+
+        if (isSitting)
+        {
+            this.isSitting = true;
+            StartMovie();
+        }
+        else
+        {
+            EnablePlayerControls();
+        }
+
+        isTransitioning = false;
+    }
+
+    void EnablePlayerControls()
+    {
         movementScript.enabled = true;
         lookScript.enabled = true;
 
@@ -163,21 +171,23 @@ public class SitOnChair : MonoBehaviour
             playerRigidBody.isKinematic = false;
         }
 
-        isSitting = false;
-        Debug.Log("Player stood up");
+        this.isSitting = false;
     }
 
-    // Rest of the methods remain the same
+    void StandPlayer()
+    {
+        if (!isTransitioning)
+        {
+            StartCoroutine(SmoothTransition(false));
+        }
+    }
+
     void StartMovie()
     {
         if (videoPlayer != null)
         {
             videoPlayer.Play();
             Debug.Log("Movie starting");
-        }
-        else
-        {
-            Debug.LogWarning("No movie assigned");
         }
     }
 
@@ -192,7 +202,6 @@ public class SitOnChair : MonoBehaviour
         if (nextLevelTrigger != null)
         {
             nextLevelTrigger.SetActive(true);
-            Debug.Log("Next level trigger activated");
         }
     }
 
