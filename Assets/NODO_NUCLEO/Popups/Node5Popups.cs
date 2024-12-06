@@ -12,6 +12,7 @@ public class Node5Popups : MonoBehaviour
     [SerializeField] private MonoBehaviour playerCameraScript;
 
     public static bool IsPopupOpen { get; private set; }
+    private bool hasBeenShown = false; // New variable to track if popup has been shown
 
     private void Awake()
     {
@@ -41,7 +42,8 @@ public class Node5Popups : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !IsPopupOpen)
+        // Only show popup if it hasn't been shown before
+        if (other.CompareTag("Player") && !IsPopupOpen && !hasBeenShown)
         {
             ShowPopup();
         }
@@ -51,6 +53,7 @@ public class Node5Popups : MonoBehaviour
     {
         Debug.Log("Showing Popup");
         IsPopupOpen = true;
+        hasBeenShown = true; // Mark that the popup has been shown
         popupPanel.SetActive(true);
 
         if (playerMovementScript != null)
@@ -84,6 +87,13 @@ public class Node5Popups : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Disable the trigger collider after closing
+        Collider triggerCollider = GetComponent<Collider>();
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = false;
+        }
     }
 
     // Optional: Add keyboard escape key as alternative way to close

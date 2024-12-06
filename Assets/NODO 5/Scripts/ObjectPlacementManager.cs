@@ -10,6 +10,10 @@ public class ObjectPlacementManager : MonoBehaviour
     [Tooltip("The number of objects that need to be placed correctly")]
     public int requiredObjects = 2;
 
+    // Add single audio source for door opening sound
+    [Tooltip("Audio source for door opening sound")]
+    public AudioSource doorSound;
+
     private int correctlyPlacedObjects = 0;
 
     private void Awake()
@@ -59,6 +63,12 @@ public class ObjectPlacementManager : MonoBehaviour
                 {
                     Debug.LogError("One of the door animators is null!");
                 }
+            }
+
+            // Play the door sound once
+            if (doorSound != null)
+            {
+                doorSound.Play();
             }
         }
         else
