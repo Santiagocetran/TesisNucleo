@@ -48,6 +48,12 @@ public class TicketBoothInteraction : MonoBehaviour
     public Animator rightDoorAnimation;
 
     public AudioSource doorAudioSource;
+
+    // Add the new method here, before Start()
+    public bool IsInteracting()
+    {
+        return isInteracting;
+    }
     void Start()
     {
         playerCamera = Camera.main.transform;

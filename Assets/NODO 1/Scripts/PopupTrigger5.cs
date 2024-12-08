@@ -3,64 +3,61 @@ using UnityEngine.UI;
 
 public class PopupTrigger5 : MonoBehaviour
 {
-    public GameObject popupUI; // Reference to the popup UI
-    public Button okButton; // Reference to the "OK" button
-    public GameObject player; // Reference to the player (First Person Controller)
-    public GameObject playerCamera; // Reference to the First Person Camera
+    public GameObject popupUI;
+    public Button okButton;
+    public GameObject player;
+    public GameObject playerCamera;
     public Collider triggerCollider;
 
-    private FirstPersonMovement movementScript; // Reference to the First Person Movement script
-    private FirstPersonLook lookScript; // Reference to the First Person Look script
-    private bool isPopupOpen = false; // To track if the popup is open
+    private FirstPersonMovement movementScript;
+    private CinemaFirstPersonLook lookScript; // Changed to CinemaFirstPersonLook
+    private bool isPopupOpen = false;
 
     void Start()
     {
-        // Ensure popup starts hidden
         popupUI.SetActive(false);
 
-        // Get reference to the movement and look scripts
         movementScript = player.GetComponent<FirstPersonMovement>();
-        lookScript = playerCamera.GetComponent<FirstPersonLook>();
+        lookScript = playerCamera.GetComponent<CinemaFirstPersonLook>(); // Changed to CinemaFirstPersonLook
 
-        // Assign the OnClick event for the OK button
         okButton.onClick.AddListener(StopPopup);
     }
 
-    // This method triggers when the player enters the collider
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isPopupOpen) // Ensure it's the player and popup is not already open
+        if (other.CompareTag("Player") && !isPopupOpen)
         {
             StartPopup();
         }
     }
 
-    // Method to open the popup and lock the player controls
     void StartPopup()
     {
         isPopupOpen = true;
         popupUI.SetActive(true);
 
-        // Disable player movement and camera controls
-        movementScript.enabled = false; // Disable the First Person Movement script
-        lookScript.enabled = false; // Disable the First Person Look script
-        Cursor.lockState = CursorLockMode.None; // Show cursor for UI interaction
-        Cursor.visible = true; // Make cursor visible
+        movementScript.enabled = false;
+        if (lookScript != null) // Added null check for safety
+        {
+            lookScript.enabled = false;
+        }
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
-    // Method to close the popup and re-enable player controls
     void StopPopup()
     {
         isPopupOpen = false;
         popupUI.SetActive(false);
 
-        // Re-enable player movement and camera controls
         movementScript.enabled = true;
-        lookScript.enabled = true;
-        Cursor.lockState = CursorLockMode.Locked; // Hide and lock the cursor back to center
-        Cursor.visible = false; // Hide cursor again
+        if (lookScript != null) // Added null check for safety
+        {
+            lookScript.enabled = true;
+        }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
-        // Disable the trigger collider to prevent reopening the popup
         triggerCollider.enabled = false;
     }
 }

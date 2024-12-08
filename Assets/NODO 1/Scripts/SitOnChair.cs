@@ -12,13 +12,13 @@ public class SitOnChair : MonoBehaviour
     public GameObject sitDownSign;
     public Transform playerCamera;
     public float transitionDuration = 0.5f;
-    public float maxStepsPerFrame = 10f; // Limit calculations per frame
+    public float maxStepsPerFrame = 10f;
 
     private bool isNearChair = false;
     private bool isSitting = false;
     private bool isTransitioning = false;
     private FirstPersonMovement movementScript;
-    private FirstPersonLook lookScript;
+    private CinemaFirstPersonLook lookScript; // Changed to CinemaFirstPersonLook
     private Rigidbody playerRigidBody;
     private Vector3 originalCameraLocalPosition;
     private Quaternion originalCameraLocalRotation;
@@ -31,7 +31,8 @@ public class SitOnChair : MonoBehaviour
     void InitializeComponents()
     {
         movementScript = player.GetComponent<FirstPersonMovement>();
-        lookScript = player.GetComponentInChildren<FirstPersonLook>();
+        // Changed to find CinemaFirstPersonLook on the camera
+        lookScript = playerCamera.GetComponent<CinemaFirstPersonLook>();
         playerRigidBody = player.GetComponent<Rigidbody>();
 
         if (playerCamera != null)
@@ -75,8 +76,15 @@ public class SitOnChair : MonoBehaviour
 
     void DisablePlayerControls()
     {
-        movementScript.enabled = false;
-        lookScript.enabled = false;
+        if (movementScript != null)
+        {
+            movementScript.enabled = false;
+        }
+
+        if (lookScript != null)
+        {
+            lookScript.enabled = false;
+        }
 
         if (playerRigidBody != null)
         {
@@ -90,19 +98,40 @@ public class SitOnChair : MonoBehaviour
         }
     }
 
+    // Rest of your methods remain the same...
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+    void EnablePlayerControls()
+    {
+        if (movementScript != null)
+        {
+            movementScript.enabled = true;
+        }
+
+        if (lookScript != null)
+        {
+            lookScript.enabled = true;
+        }
+
+        if (playerRigidBody != null)
+        {
+            playerRigidBody.isKinematic = false;
+        }
+
+        this.isSitting = false;
+    }
+
+    // Your existing methods remain unchanged...
     IEnumerator SmoothTransition(bool isSitting)
     {
         isTransitioning = true;
         float elapsedTime = 0f;
         int steps = 0;
 
-        // Cache start positions
         Vector3 startPlayerPos = player.transform.position;
         Quaternion startPlayerRot = player.transform.rotation;
         Vector3 startCameraPos = playerCamera.position;
         Quaternion startCameraRot = playerCamera.rotation;
 
-        // Calculate target positions
         Vector3 targetPlayerPos = isSitting ? sittingPosition.position : startPlayerPos;
         Vector3 directionToScreen = (lookAtTarget.position - sittingPosition.position).normalized;
         Quaternion targetPlayerRot = isSitting ?
@@ -119,7 +148,6 @@ public class SitOnChair : MonoBehaviour
 
         while (elapsedTime < transitionDuration)
         {
-            // Limit calculations per frame
             if (steps >= maxStepsPerFrame)
             {
                 steps = 0;
@@ -127,9 +155,8 @@ public class SitOnChair : MonoBehaviour
             }
 
             float t = elapsedTime / transitionDuration;
-            t = Mathf.SmoothStep(0, 1, t); // Smooth out the transition
+            t = Mathf.SmoothStep(0, 1, t);
 
-            // Update positions with frame independent timing
             player.transform.position = Vector3.Lerp(startPlayerPos, targetPlayerPos, t);
             player.transform.rotation = Quaternion.Lerp(startPlayerRot, targetPlayerRot, t);
             playerCamera.position = Vector3.Lerp(startCameraPos, targetCameraPos, t);
@@ -138,11 +165,9 @@ public class SitOnChair : MonoBehaviour
             elapsedTime += Time.deltaTime;
             steps++;
 
-            // Add a small delay between heavy calculations
             yield return new WaitForSeconds(0.001f);
         }
 
-        // Ensure final positions are exact
         player.transform.position = targetPlayerPos;
         player.transform.rotation = targetPlayerRot;
         playerCamera.position = targetCameraPos;
@@ -159,19 +184,6 @@ public class SitOnChair : MonoBehaviour
         }
 
         isTransitioning = false;
-    }
-
-    void EnablePlayerControls()
-    {
-        movementScript.enabled = true;
-        lookScript.enabled = true;
-
-        if (playerRigidBody != null)
-        {
-            playerRigidBody.isKinematic = false;
-        }
-
-        this.isSitting = false;
     }
 
     void StandPlayer()
