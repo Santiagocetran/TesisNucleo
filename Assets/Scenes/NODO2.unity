@@ -5455,7 +5455,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.021
+      value: -0.534
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
@@ -5465,27 +5465,27 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.595
+      value: 10.604
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.16879418
+      value: -0.32415733
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.16879418
+      value: 0.32415733
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.6866648
+      value: 0.6284282
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.6866648
+      value: 0.6284282
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
@@ -5500,7 +5500,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 207.621
+      value: 234.571
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7c2ac5b4979456a47a66c386401fd232,
         type: 3}
@@ -9378,7 +9378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1053114867}
-  rayDistance: 5
+  rayDistance: 1
   cardLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -10248,7 +10248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1053114867}
-  rayDistance: 3
+  rayDistance: 1
   computerLayer:
     serializedVersion: 2
     m_Bits: 128

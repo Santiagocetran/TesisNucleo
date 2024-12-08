@@ -8,6 +8,8 @@ public class PopupTrigger : MonoBehaviour
     public GameObject popupPanel;
     public Button closeButton;
 
+    private bool hasBeenShown = false;  // Track if popup has been shown
+
     private void Start()
     {
         // Hide popup at start
@@ -19,7 +21,8 @@ public class PopupTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        // Only show popup if it hasn't been shown before
+        if (other.CompareTag("Player") && !hasBeenShown)
         {
             // Pause game and show popup
             Time.timeScale = 0f;
@@ -30,7 +33,7 @@ public class PopupTrigger : MonoBehaviour
     private void ShowPopup()
     {
         popupPanel.SetActive(true);
-        
+        hasBeenShown = true;  // Mark as shown
     }
 
     private void ClosePopup()
@@ -40,5 +43,8 @@ public class PopupTrigger : MonoBehaviour
 
         // Hide popup
         popupPanel.SetActive(false);
+
+        // Optionally, disable the trigger collider so it doesn't fire again
+        GetComponent<Collider2D>().enabled = false;
     }
 }

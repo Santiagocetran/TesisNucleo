@@ -46,6 +46,12 @@ public class ObjectGrabber : MonoBehaviour
                 DropObject();
         }
 
+        // Update hold UI visibility
+        if (HoldUI.Instance != null)
+        {
+            HoldUI.Instance.ShowHoldUI(heldObject != null);
+        }
+
         if (heldObject != null)
         {
             UpdateHeldObjectPosition();

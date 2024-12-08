@@ -44,10 +44,14 @@ public class ComputerInteraction : MonoBehaviour
 
     public AudioSource AudioSource;
 
+    private bool hasCompletedVideos = false;
+
     void Start()
     {
         pressEText.SetActive(false); // Hide "Press E" prompt initially
         popupMessage.SetActive(false); // Hide popup message initially
+
+        hasCompletedVideos = false; // Initialize the flag
 
         closeButton.onClick.AddListener(ClosePopup);
         LockCursor();
@@ -100,7 +104,8 @@ public class ComputerInteraction : MonoBehaviour
         {
             GameObject hitComputer = hit.collider.gameObject;
 
-            if (hitComputer != currentComputer)
+            // Only show the "Press E" text if videos haven't been completed
+            if (hitComputer != currentComputer && !hasCompletedVideos)
             {
                 currentComputer = hitComputer;
                 ShowPressEText(true);
@@ -115,12 +120,12 @@ public class ComputerInteraction : MonoBehaviour
 
     void HandleComputerInteraction()
     {
-        if (Input.GetKeyDown(KeyCode.E) && currentComputer != null)
+        // Only allow interaction if videos haven't been completed
+        if (Input.GetKeyDown(KeyCode.E) && currentComputer != null && !hasCompletedVideos)
         {
             if (cardHighlight.hasCard)
             {
                 SitAndInteractWithComputer();
-                // Stop the audio when the door opens
                 if (AudioSource != null && AudioSource.isPlaying)
                 {
                     AudioSource.Stop();
@@ -132,6 +137,7 @@ public class ComputerInteraction : MonoBehaviour
             }
         }
     }
+
 
     void ShowPressEText(bool show)
     {
@@ -304,6 +310,7 @@ public class ComputerInteraction : MonoBehaviour
     void OnSecondVideoFinished(VideoPlayer vp)
     {
         Debug.Log("Second video finished. Player will stand up.");
+        hasCompletedVideos = true; // Set the flag when videos are completed
         StandUp();
     }
 

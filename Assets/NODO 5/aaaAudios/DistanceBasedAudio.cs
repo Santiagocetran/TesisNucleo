@@ -8,6 +8,8 @@ public class DistanceBasedAudio : MonoBehaviour
     private AudioSource audioSource;
     private Transform playerTransform;
 
+    private GrabbableObject grabbableObject; // Reference to the GrabbableObject component
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -17,10 +19,29 @@ public class DistanceBasedAudio : MonoBehaviour
         audioSource.minDistance = minDistance;
 
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+
+        // Get reference to the GrabbableObject component
+        grabbableObject = GetComponent<GrabbableObject>();
+        if (grabbableObject == null)
+        {
+            Debug.LogWarning("No GrabbableObject component found on object with DistanceBasedAudio!");
+        }
     }
 
     void Update()
     {
+        // Check if the object is correctly placed
+        if (grabbableObject != null && grabbableObject.isCorrectlyPlaced)
+        {
+            // If object is placed, ensure audio is stopped
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+            return; // Exit early
+        }
+
+        // Normal audio behavior if object isn't placed
         float distance = Vector3.Distance(transform.position, playerTransform.position);
         float volume = (1f - Mathf.Clamp01(distance / maxDistance)) * volumeMultiplier;
         audioSource.volume = volume;

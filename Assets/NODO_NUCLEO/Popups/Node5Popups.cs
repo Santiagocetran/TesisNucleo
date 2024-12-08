@@ -12,7 +12,14 @@ public class Node5Popups : MonoBehaviour
     [SerializeField] private MonoBehaviour playerCameraScript;
 
     public static bool IsPopupOpen { get; private set; }
-    private bool hasBeenShown = false; // New variable to track if popup has been shown
+    private bool hasBeenShown = false;
+
+    private CursorLockMode originalLockState;
+    private bool originalCursorVisible;
+
+    // Add reference to player's Rigidbody
+    private Rigidbody playerRigidbody;
+    private RigidbodyConstraints originalConstraints;
 
     private void Awake()
     {
@@ -23,8 +30,19 @@ public class Node5Popups : MonoBehaviour
 
     private void Start()
     {
-        // Set up the button listener in Start instead of Awake
         SetupCloseButton();
+        originalLockState = Cursor.lockState;
+        originalCursorVisible = Cursor.visible;
+
+        // Get player's Rigidbody reference
+        if (playerMovementScript != null)
+        {
+            playerRigidbody = playerMovementScript.GetComponent<Rigidbody>();
+            if (playerRigidbody != null)
+            {
+                originalConstraints = playerRigidbody.constraints;
+            }
+        }
     }
 
     private void SetupCloseButton()
@@ -35,14 +53,12 @@ public class Node5Popups : MonoBehaviour
             return;
         }
 
-        // Remove any existing listeners and add our close function
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(OnCloseButtonClicked);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Only show popup if it hasn't been shown before
         if (other.CompareTag("Player") && !IsPopupOpen && !hasBeenShown)
         {
             ShowPopup();
@@ -52,9 +68,6 @@ public class Node5Popups : MonoBehaviour
     private void ShowPopup()
     {
         Debug.Log("Showing Popup");
-        IsPopupOpen = true;
-        hasBeenShown = true; // Mark that the popup has been shown
-        popupPanel.SetActive(true);
 
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
@@ -62,11 +75,36 @@ public class Node5Popups : MonoBehaviour
         if (playerCameraScript != null)
             playerCameraScript.enabled = false;
 
+        // Freeze player rotation
+        if (playerRigidbody != null)
+        {
+            // Store current velocity
+            Vector3 currentVelocity = playerRigidbody.velocity;
+
+            // Freeze all rotation but keep existing constraints for position
+            playerRigidbody.constraints = playerRigidbody.constraints |
+                                        RigidbodyConstraints.FreezeRotationX |
+                                        RigidbodyConstraints.FreezeRotationY |
+                                        RigidbodyConstraints.FreezeRotationZ;
+
+            // Stop any existing rotation
+            playerRigidbody.angularVelocity = Vector3.zero;
+
+            // Maintain current velocity to prevent sudden stops
+            playerRigidbody.velocity = currentVelocity;
+        }
+
+        originalLockState = Cursor.lockState;
+        originalCursorVisible = Cursor.visible;
+
+        IsPopupOpen = true;
+        hasBeenShown = true;
+
+        popupPanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
-    // New method specifically for the button click
     public void OnCloseButtonClicked()
     {
         Debug.Log("Close button clicked!");
@@ -76,8 +114,17 @@ public class Node5Popups : MonoBehaviour
     public void ClosePopup()
     {
         Debug.Log("Closing Popup");
-        IsPopupOpen = false;
+
         popupPanel.SetActive(false);
+
+        Cursor.lockState = originalLockState;
+        Cursor.visible = originalCursorVisible;
+
+        // Restore original Rigidbody constraints
+        if (playerRigidbody != null)
+        {
+            playerRigidbody.constraints = originalConstraints;
+        }
 
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
@@ -85,10 +132,8 @@ public class Node5Popups : MonoBehaviour
         if (playerCameraScript != null)
             playerCameraScript.enabled = true;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        IsPopupOpen = false;
 
-        // Disable the trigger collider after closing
         Collider triggerCollider = GetComponent<Collider>();
         if (triggerCollider != null)
         {
@@ -96,7 +141,6 @@ public class Node5Popups : MonoBehaviour
         }
     }
 
-    // Optional: Add keyboard escape key as alternative way to close
     private void Update()
     {
         if (IsPopupOpen && Input.GetKeyDown(KeyCode.Escape))
@@ -111,5 +155,14 @@ public class Node5Popups : MonoBehaviour
             closeButton.onClick.RemoveListener(OnCloseButtonClicked);
 
         IsPopupOpen = false;
+
+        Cursor.lockState = originalLockState;
+        Cursor.visible = originalCursorVisible;
+
+        // Restore Rigidbody constraints on destroy
+        if (playerRigidbody != null)
+        {
+            playerRigidbody.constraints = originalConstraints;
+        }
     }
 }
