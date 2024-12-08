@@ -13,6 +13,12 @@ public class ExitGamePopup : MonoBehaviour
 
     public static bool IsPopupOpen { get; private set; }
 
+    // Add these new variables
+    private CursorLockMode originalLockState;
+    private bool originalCursorVisible;
+    private Rigidbody playerRigidbody;
+    private RigidbodyConstraints originalConstraints;
+
     private void Awake()
     {
         if (popupPanel != null)
@@ -23,6 +29,20 @@ public class ExitGamePopup : MonoBehaviour
     private void Start()
     {
         SetupExitButton();
+
+        // Store initial cursor state
+        originalLockState = Cursor.lockState;
+        originalCursorVisible = Cursor.visible;
+
+        // Get player's Rigidbody reference
+        if (playerMovementScript != null)
+        {
+            playerRigidbody = playerMovementScript.GetComponent<Rigidbody>();
+            if (playerRigidbody != null)
+            {
+                originalConstraints = playerRigidbody.constraints;
+            }
+        }
     }
 
     private void SetupExitButton()
@@ -48,15 +68,40 @@ public class ExitGamePopup : MonoBehaviour
     private void ShowPopup()
     {
         Debug.Log("Showing Exit Popup");
-        IsPopupOpen = true;
-        popupPanel.SetActive(true);
 
+        // Disable scripts first
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
         if (playerCameraScript != null)
             playerCameraScript.enabled = false;
 
+        // Handle Rigidbody rotation and movement
+        if (playerRigidbody != null)
+        {
+            // Store current velocity
+            Vector3 currentVelocity = playerRigidbody.velocity;
+
+            // Freeze all rotation but keep existing constraints for position
+            playerRigidbody.constraints = playerRigidbody.constraints |
+                                        RigidbodyConstraints.FreezeRotationX |
+                                        RigidbodyConstraints.FreezeRotationY |
+                                        RigidbodyConstraints.FreezeRotationZ;
+
+            // Stop any existing rotation
+            playerRigidbody.angularVelocity = Vector3.zero;
+
+            // Maintain current velocity to prevent sudden stops
+            playerRigidbody.velocity = currentVelocity;
+        }
+
+        // Store cursor state before changing it
+        originalLockState = Cursor.lockState;
+        originalCursorVisible = Cursor.visible;
+
+        // Show popup and update cursor
+        IsPopupOpen = true;
+        popupPanel.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -70,10 +115,8 @@ public class ExitGamePopup : MonoBehaviour
     private void ExitGame()
     {
         Debug.Log("Exiting Game...");
-        // Call Application.Quit to close the game.
         Application.Quit();
 
-        // Optional: Add a debug message to indicate this doesn't work in the Editor.
 #if UNITY_EDITOR
         Debug.LogWarning("Application.Quit() does not work in the Unity Editor.");
 #endif
@@ -85,6 +128,15 @@ public class ExitGamePopup : MonoBehaviour
             exitButton.onClick.RemoveListener(OnExitButtonClicked);
 
         IsPopupOpen = false;
+
+        // Restore cursor state
+        Cursor.lockState = originalLockState;
+        Cursor.visible = originalCursorVisible;
+
+        // Restore Rigidbody constraints
+        if (playerRigidbody != null)
+        {
+            playerRigidbody.constraints = originalConstraints;
+        }
     }
 }
-

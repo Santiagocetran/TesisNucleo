@@ -17,6 +17,10 @@ public class FirstPersonLook : MonoBehaviour
     private Quaternion lastCameraRotation;
     private Quaternion lastCharacterRotation;
 
+    // Add frozen state variables
+    private bool isFrozen = false;
+    private Vector2 frozenVelocity;
+
     void Reset()
     {
         character = GetComponentInParent<FirstPersonMovement>().transform;
@@ -41,9 +45,26 @@ public class FirstPersonLook : MonoBehaviour
 
     void Update()
     {
+        // Check if popup state changed
+        if (PopupManager.IsPopupOpen && !isFrozen)
+        {
+            // Store the current state when freezing
+            frozenVelocity = velocity;
+            frameVelocity = Vector2.zero;
+            isFrozen = true;
+        }
+        else if (!PopupManager.IsPopupOpen && isFrozen)
+        {
+            // Restore the state when unfreezing
+            velocity = frozenVelocity;
+            isFrozen = false;
+        }
+
         if (PopupManager.IsPopupOpen)
         {
-            // Force rotations to stay at their last position
+            // Completely freeze everything
+            velocity = frozenVelocity;
+            frameVelocity = Vector2.zero;
             transform.localRotation = lastCameraRotation;
             character.localRotation = lastCharacterRotation;
             return;
