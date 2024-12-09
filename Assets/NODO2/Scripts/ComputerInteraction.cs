@@ -46,6 +46,19 @@ public class ComputerInteraction : MonoBehaviour
 
     private bool hasCompletedVideos = false;
 
+    public Transform screenTransform; // Reference to the computer screen's transform
+    [Header("Camera View Settings")]
+    public float sittingFOV = 60f; // FOV when sitting at computer
+    public float defaultFOV; // Will store the original camera FOV
+    public Vector3 cameraPositionOffset = new Vector3(0, 0, 0); // Fine-tune camera position when sitting
+    private Vector3 originalCameraPosition;
+    private Quaternion originalCameraRotation;
+
+    [Header("Screen Adjustment")]
+    public float viewportPercentage = 0.9f; // How much of the viewport the screen should occupy
+    public bool adjustForResolution = true; // Toggle resolution adjustment
+
+
     void Start()
     {
         pressEText.SetActive(false); // Hide "Press E" prompt initially
@@ -64,6 +77,13 @@ public class ComputerInteraction : MonoBehaviour
 
             // Subscribe to the end of the second video to make the player stand up
             secondVideoPlayer.loopPointReached += OnSecondVideoFinished;
+
+            if (playerCamera != null)
+            {
+                defaultFOV = playerCamera.fieldOfView;
+                originalCameraPosition = playerCamera.transform.localPosition;
+                originalCameraRotation = playerCamera.transform.localRotation;
+            }
         }
     }
 
@@ -176,25 +196,124 @@ public class ComputerInteraction : MonoBehaviour
         Quaternion startRot = playerMovement.transform.rotation;
         Vector3 endPos = chairPosition.position;
 
-        // Rotate the player to face the screenCenterPoint to ensure it's centered in view
-        Quaternion endRot = Quaternion.LookRotation(screenCenterPoint.position - chairPosition.position);
+        // Calculate the optimal position to view the screen
+        Vector3 screenCenter = screenCenterPoint.position;
+        Vector3 directionToScreen = (screenCenter - chairPosition.position).normalized;
+        Quaternion endRot = Quaternion.LookRotation(directionToScreen);
+
+        // Store camera start positions
+        Vector3 cameraStartPos = playerCamera.transform.localPosition;
+        Quaternion cameraStartRot = playerCamera.transform.localRotation;
+        float startFOV = playerCamera.fieldOfView;
 
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
-            playerMovement.transform.position = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
-            playerMovement.transform.rotation = Quaternion.Lerp(startRot, endRot, elapsedTime / duration);
+            float t = elapsedTime / duration;
+
+            // Move player
+            playerMovement.transform.position = Vector3.Lerp(startPos, endPos, t);
+            playerMovement.transform.rotation = Quaternion.Lerp(startRot, endRot, t);
+
+            // Adjust camera
+            playerCamera.transform.localPosition = Vector3.Lerp(cameraStartPos, cameraPositionOffset, t);
+            playerCamera.transform.localRotation = Quaternion.Lerp(cameraStartRot, Quaternion.identity, t);
+            playerCamera.fieldOfView = Mathf.Lerp(startFOV, sittingFOV, t);
+
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // Ensure the player is exactly in place and facing the screen center
+        // Ensure final position is exact
         playerMovement.transform.position = endPos;
         playerMovement.transform.rotation = endRot;
+        playerCamera.transform.localPosition = cameraPositionOffset;
+        playerCamera.transform.localRotation = Quaternion.identity;
+        playerCamera.fieldOfView = sittingFOV;
+
+        if (adjustForResolution)
+        {
+            AdjustViewForScreenResolution();
+        }
 
         // Start the video once seated
         StartVideo();
+    }
+
+    void AdjustViewForScreenResolution()
+    {
+        if (screenTransform == null || playerCamera == null) return;
+
+        // Get screen bounds in world space
+        Bounds screenBounds = new Bounds();
+        if (screenTransform.TryGetComponent<Renderer>(out var renderer))
+        {
+            screenBounds = renderer.bounds;
+        }
+        else if (screenTransform.TryGetComponent<RectTransform>(out var rectTransform))
+        {
+            // Handle UI elements
+            Vector3[] corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+            screenBounds = new Bounds(rectTransform.position, Vector3.zero);
+            foreach (Vector3 corner in corners)
+            {
+                screenBounds.Encapsulate(corner);
+            }
+        }
+
+        // Calculate the optimal FOV to fit the screen
+        float screenWidth = screenBounds.size.x;
+        float screenHeight = screenBounds.size.y;
+        float screenAspect = screenWidth / screenHeight;
+        float distanceToScreen = Vector3.Distance(playerCamera.transform.position, screenBounds.center);
+
+        // Adjust FOV based on screen aspect ratio and desired viewport coverage
+        float targetFOV = 2.0f * Mathf.Atan((screenHeight * 0.5f) / distanceToScreen) * Mathf.Rad2Deg;
+        targetFOV /= viewportPercentage; // Adjust for desired viewport coverage
+
+        // Apply the calculated FOV
+        playerCamera.fieldOfView = targetFOV;
+    }
+
+    IEnumerator StandUpSmoothly()
+    {
+        float duration = 0.5f;
+        float startFOV = playerCamera.fieldOfView;
+        Vector3 cameraStartPos = playerCamera.transform.localPosition;
+        Quaternion cameraStartRot = playerCamera.transform.localRotation;
+
+        // Calculate a safe standing position slightly in front of the chair
+        Vector3 standingPosition = chairPosition.position + chairPosition.forward * -0.5f; // Step back from chair
+        standingPosition.y = chairPosition.position.y; // Maintain the same height as chair
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+
+            // Reset camera
+            playerCamera.transform.localPosition = Vector3.Lerp(cameraStartPos, originalCameraPosition, t);
+            playerCamera.transform.localRotation = Quaternion.Lerp(cameraStartRot, originalCameraRotation, t);
+            playerCamera.fieldOfView = Mathf.Lerp(startFOV, defaultFOV, t);
+
+            // Move player to standing position
+            playerMovement.transform.position = Vector3.Lerp(playerMovement.transform.position, standingPosition, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure final position is exact
+        playerCamera.transform.localPosition = originalCameraPosition;
+        playerCamera.transform.localRotation = originalCameraRotation;
+        playerCamera.fieldOfView = defaultFOV;
+        playerMovement.transform.position = standingPosition;
+
+        // Enable physics after positioning is complete
+        UnlockPlayerControls();
     }
 
     void OnFirstVideoFinished(VideoPlayer vp)
@@ -244,19 +363,43 @@ public class ComputerInteraction : MonoBehaviour
 
     void UnlockPlayerControls()
     {
-        playerMovement.enabled = true;
-        playerLook.enabled = true;
-
-        // Reactivate player's collider and Rigidbody
+        // First enable the collider so the ground check works
         playerCollider.enabled = true;
+
+        // Reset and enable rigidbody
         if (playerRigidBody != null)
         {
             playerRigidBody.isKinematic = false;
+            playerRigidBody.velocity = Vector3.zero; // Reset any velocity
         }
+
+        // Do a ground check
+        bool isGrounded = Physics.Raycast(
+            playerMovement.transform.position + Vector3.up * 0.1f,
+            Vector3.down,
+            0.2f
+        );
+
+        if (!isGrounded)
+        {
+            // If not grounded, adjust Y position to ground
+            RaycastHit hit;
+            if (Physics.Raycast(playerMovement.transform.position + Vector3.up, Vector3.down, out hit))
+            {
+                Vector3 newPos = playerMovement.transform.position;
+                newPos.y = hit.point.y;
+                playerMovement.transform.position = newPos;
+            }
+        }
+
+        // Now enable movement scripts
+        playerMovement.enabled = true;
+        playerLook.enabled = true;
 
         isSitting = false;
         Debug.Log("Player stood up");
     }
+
 
     void UnlockCursor()
     {
@@ -316,8 +459,7 @@ public class ComputerInteraction : MonoBehaviour
 
     void StandUp()
     {
-        // Enable movement and look controls
-        UnlockPlayerControls();
+        StartCoroutine(StandUpSmoothly());
 
         // Show the crosshair again
         if (crosshair != null)

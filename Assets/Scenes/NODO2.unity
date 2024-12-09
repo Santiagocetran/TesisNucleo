@@ -10268,6 +10268,12 @@ MonoBehaviour:
   crosshair: {fileID: 676939427}
   hiddenObject: {fileID: 1203120196}
   AudioSource: {fileID: 1703338989}
+  screenTransform: {fileID: 1969525158}
+  sittingFOV: 60
+  defaultFOV: 0
+  cameraPositionOffset: {x: 0, y: 0.1, z: 0}
+  viewportPercentage: 0.9
+  adjustForResolution: 1
 --- !u!1 &1163448103 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 48ae6be132f90254a85ac586aeaf968f,
@@ -17936,7 +17942,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1472801652}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.143, y: -0.051, z: 13.9718}
+  m_LocalPosition: {x: 3.119, y: 1.056, z: 13.841241}
   m_LocalScale: {x: 0.012283095, y: 0.11160161, z: 0.11160161}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -21917,7 +21923,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1918522260}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.143, y: -0.11, z: 13.77}
+  m_LocalPosition: {x: 3.109, y: 1.032, z: 13.395}
   m_LocalScale: {x: 0.012283095, y: 0.11160161, z: 0.11160161}
   m_ConstrainProportionsScale: 1
   m_Children: []
