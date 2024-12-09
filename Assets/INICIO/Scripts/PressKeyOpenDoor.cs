@@ -17,7 +17,7 @@ public class PressKeyOpenDoor : MonoBehaviour
     public MonoBehaviour firstPersonLook;     // Reference to the look script
 
     private bool Action = false;
-    private string correctPassword = "quimera";
+    private string correctPassword = "spawn";
 
     void Start()
     {

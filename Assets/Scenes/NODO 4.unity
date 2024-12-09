@@ -235,13 +235,15 @@ GameObject:
   - component: {fileID: 110668352}
   - component: {fileID: 110668351}
   - component: {fileID: 110668350}
+  - component: {fileID: 110668354}
+  - component: {fileID: 110668353}
   m_Layer: 0
   m_Name: Pili_front
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &110668350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,13 +325,100 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110668349}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -101.37, y: -0.37, z: 0}
-  m_LocalScale: {x: 0.61194235, y: 0.61194235, z: 0.61194235}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: -100.02, y: -0.22, z: 0}
+  m_LocalScale: {x: 0.6654873, y: 0.6654873, z: 0.6654873}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!60 &110668353
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110668349}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.65, y: 4.54}
+    newSize: {x: 1.65, y: 4.54}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.49499997, y: -0.95}
+      - {x: 0.555, y: -0.96999997}
+      - {x: 0.78499997, y: -0.82}
+      - {x: 0.825, y: -0.65999997}
+      - {x: 0.825, y: -0.48999998}
+      - {x: 0.805, y: -0.48999998}
+      - {x: 0.79499996, y: 0.89}
+      - {x: 0.775, y: 0.90999997}
+      - {x: 0.705, y: 1.0799999}
+      - {x: 0.79499996, y: 1.22}
+      - {x: 0.765, y: 1.52}
+      - {x: 0.685, y: 2.03}
+      - {x: 0.435, y: 2.27}
+      - {x: -0.445, y: 2.27}
+      - {x: -0.545, y: 2.21}
+      - {x: -0.66499996, y: 2.02}
+      - {x: -0.745, y: 1.51}
+      - {x: -0.745, y: 1.13}
+      - {x: -0.805, y: 0.9}
+      - {x: -0.825, y: -0.099999994}
+      - {x: -0.825, y: -0.66999996}
+      - {x: -0.78499997, y: -0.79999995}
+      - {x: -0.565, y: -0.96999997}
+      - {x: -0.48499998, y: -0.95}
+      - {x: -0.60499996, y: -1.93}
+      - {x: -0.66499996, y: -2.06}
+      - {x: -0.645, y: -2.27}
+      - {x: 0.635, y: -2.27}
+      - {x: 0.645, y: -2.06}
+      - {x: 0.585, y: -1.92}
+      - {x: 0.49499997, y: -1.9399999}
+    - - {x: -0.035, y: -2.04}
+      - {x: -0.035, y: -1.9599999}
+      - {x: -0.044999998, y: -1.9499999}
+      - {x: -0.044999998, y: -0.96}
+      - {x: 0.044999998, y: -0.96}
+      - {x: 0.044999998, y: -1.9399999}
+      - {x: 0.024999999, y: -1.9599999}
+      - {x: 0.024999999, y: -2.04}
+      - {x: -0.005, y: -2.05}
+      - {x: -0.015, y: -2.04}
+--- !u!50 &110668354
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110668349}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &165930254
 GameObject:
   m_ObjectHideFlags: 0
@@ -1520,7 +1609,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &353953942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3453,7 +3542,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: {fileID: 1132667947}
-  player: {fileID: 353953944}
+  player: {fileID: 110668352}
   followDistance: 1.5
   interactionDistance: 2
   speed: 5
@@ -3908,7 +3997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: {fileID: 1795378498}
-  player: {fileID: 353953944}
+  player: {fileID: 110668352}
   followDistance: 3
   interactionDistance: 2
   speed: 5
@@ -4966,7 +5055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22983d19fbfdf904e9e291b23b4ed664, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 353953944}
+  target: {fileID: 110668352}
   smoothSpeed: 0.125
   offset: {x: 1, y: 1, z: -10}
 --- !u!1 &1084967810
@@ -5344,8 +5433,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1091e04a4166c64d9322d31d248e2d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leader: {fileID: 353953944}
-  player: {fileID: 353953944}
+  leader: {fileID: 110668352}
+  player: {fileID: 110668352}
   followDistance: 1.5
   interactionDistance: 2
   speed: 5
@@ -6601,7 +6690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: {fileID: 1795378498}
-  player: {fileID: 353953944}
+  player: {fileID: 110668352}
   followDistance: 1.5
   interactionDistance: 2
   speed: 5
@@ -9050,7 +9139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leader: {fileID: 759588318}
-  player: {fileID: 353953944}
+  player: {fileID: 110668352}
   followDistance: 3
   interactionDistance: 2
   speed: 5
